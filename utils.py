@@ -1,13 +1,11 @@
-# Imports:
-# --------
+# Imports
 import torch
 import random
 from collections import deque
 import torch.nn.functional as F
 
 
-# Repla Buffer:
-# -------------
+# Repla Buffer
 class ReplayBuffer():
     def __init__(self, buffer_limit):
         self.buffer = deque(maxlen=buffer_limit)
@@ -35,8 +33,7 @@ class ReplayBuffer():
         return len(self.buffer)
 
 
-# Train function:
-# ---------------
+# Train function
 def train(q_net, 
           q_target, 
           memory, 
@@ -44,15 +41,15 @@ def train(q_net,
           batch_size,
           gamma):
     
-    #! We sample from the same Replay Buffer n=10 times
+    # sample from the same Replay Buffer n=10 times
     for _ in range(10):
         #! Monte Carlo sampling of a batch
         s, a, r, s_prime, done_mask = memory.sample(batch_size)
 
-        #! Get the Q-values
+        # Get the Q-values
         q_out = q_net(s)
 
-        #! DQN update rule
+        # DQN update rule
         q_a = q_out.gather(1, a)
         max_q_prime = q_target(s_prime).max(1)[0].unsqueeze(1)
         target = r + gamma * max_q_prime * done_mask
